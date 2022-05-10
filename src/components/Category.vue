@@ -1,6 +1,6 @@
 <template>
 <form action="#!" id="main">
-    <h2>Login to your account</h2>
+    <h2>Category Account</h2>
 
     <div class="input-parent">
         <label for="username">Name</label>

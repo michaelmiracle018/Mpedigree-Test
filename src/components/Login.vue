@@ -1,6 +1,6 @@
 <template>
   <form action="#!" id="main">
-    <h2>Login to your account</h2>
+    <h2>Login With Your Account</h2>
 
     <div class="input-parent">
       <label for="username">Username or Email</label>
@@ -38,6 +38,9 @@ export default {
                    if(this.$store.getters.SignInToken){
                     this.$router.push({path: "/DashBoard"})
 
+            }
+            else {
+              this.$router.push({path: "/Register"})
             }
 
         },

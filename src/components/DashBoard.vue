@@ -27,8 +27,7 @@
 			</div>
 			<div class="main-board">
 				<div class="card-board">
-					<li>Miracle</li>
-					<li>michael</li>
+					
 				</div>
 			</div>
 		</div>
@@ -36,7 +35,9 @@
 </template>
 
 <script>
-export default {};
+export default {
+	
+};
 </script>
 
 <style></style>

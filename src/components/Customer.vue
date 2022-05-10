@@ -1,6 +1,6 @@
 <template>
   <form action="#!" id="main">
-		<h2>Register to your account</h2>
+		<h2>Customer account</h2>
 		<div class="form-group">
 			<div class="input-register">
 				<label for="username" class="label">Name</label>
@@ -73,7 +73,7 @@ data() {
         removeInfo(index) {
             this.collectInfo = this.collectInfo.filter((info, i) => i !== index) 
             
-        }
+        },
 	},
 }
 </script>
@@ -82,17 +82,18 @@ data() {
 .fa-solid {
 	color: red;
 }
-.info-container {
-	background: #f4f4f4;
-	margin: 10rem;
-	padding: 12px;
+
+
+.info-container h2{
+	background: black;
+	margin:  20px 30rem;
+	padding: 5px;
 	cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	color: white;
 }
 
-.info-container h2 {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-}
+
 
 </style>
