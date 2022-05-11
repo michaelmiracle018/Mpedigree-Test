@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { createStore } from "vuex";
+import VueAxios from "vue-axios";
 import axios from "axios";
 
 import "./assets/DashBoard.css";
@@ -72,7 +73,7 @@ const store = createStore({
 					return true;
 				})
 				.catch((error) => {
-					console.error(error);
+					console.log(error);
 				});
 		},
 		newCustomer(context, credentials) {
@@ -90,7 +91,7 @@ const store = createStore({
 					return true;
 				})
 				.catch((error) => {
-					console.error(error);
+					console.log(error);
 				});
 		},
 		category(context, credentials) {
@@ -103,13 +104,14 @@ const store = createStore({
 					context.commit("customerCategory", res.data.token);
 				})
 				.catch((error) => {
-					console.error(error);
+					console.log(error);
 				});
 		},
 	},
 	getters: {
-		getSignToken: (state) => {
-			return state.successMessage;
+		getSignUpToken(state) {
+			state.successMessage
+
 		},
 		getLogin(state) {
 			return state.setLoginToken;
@@ -121,3 +123,4 @@ const app = createApp(App);
 app.use(store);
 app.use(router);
 app.mount("#app");
+app.use(VueAxios, axios);

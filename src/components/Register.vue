@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
 	data() {
 		return {
@@ -91,24 +91,25 @@ export default {
 
 	methods: {
 		...mapActions(["register"]),
+		...mapGetters(["getSignUpToken"]),
 
 		submit() {
 			this.register({
 				name: this.name,
 				type: this.type,
-				admin_phone: this.adminPhone,
-				admin_other_names: this.otherNames,
-				admin_first_name: this.adminFirstName,
-				admin_last_name: this.adminLastName,
-				admin_password: this.adminPassword,
 				market: this.market,
 				address: this.address,
 				admin_email: this.adminEmail,
+				admin_phone: this.adminPhone,
+				admin_password: this.adminPassword,
+				admin_other_names: this.otherNames,
+				admin_last_name: this.adminLastName,
+				admin_first_name: this.adminFirstName,
 			});
-			// console.log(this.$store.getters.getSignToken)
-			if (this.$store.getters.getSignToken) {
+			// console.log(this.getSignUpToken);
+			if (this.getSignUpToken) 
 				this.$router.push({ path: "/DashBoard" });
-			}
+			
 		},
 	},
 };

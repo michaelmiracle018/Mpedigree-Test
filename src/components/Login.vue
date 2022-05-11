@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex';
+import {mapActions, mapGetters} from 'vuex';
 export default {
  data() {
         return {
@@ -32,10 +32,11 @@ export default {
     },
     methods: {
         ...mapActions(['login']),
+        ...mapGetters(['getLogin']),
         submit() {
                 this.login({email:this.email,password:this.password}); 
-                // console.log(this.$store.getters.getLogin);
-                   if(this.$store.getters.SignInToken){
+                console.log(this.getLogin);
+                   if(this.getLogin){
                     this.$router.push({path: "/DashBoard"})
 
             }
