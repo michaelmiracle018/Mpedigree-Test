@@ -9,113 +9,155 @@ import axios from "axios";
 import "./assets/DashBoard.css";
 import "./assets/Style.css";
 
-const RegisterUrl = "/entity/signup";
-const baseUrl = "https://staging.afcfta.app/api";
+// const deleteCategory =  "https://staging.afcfta.app/api/inventory/category/list/1/";
+const registerUrl = "/entity/signup";
+const baseURL = "https://staging.afcfta.app/api";
 const loginUrl = "/individual/signin";
-const customerCategory = "/inventory/customers/add";
-const customer = "/inventory/customers/add";
+const category = "/inventory/category/add/";
+// const customer = "/inventory/customers/add/";
+
+const token = JSON.parse(localStorage.getItem("signInToken"));
+// const id = JSON.parse(localStorage.getItem("userId"));
 
 const store = createStore({
-	state() {
-		return {
-			addCustomers: [],
-			createCategories: [],
-			signInToken: null,
-			successMessage: "",
-		};
+	state: {
+		category: [],
+		signInToken: null,
+		userId: null,
+		user: null,
 	},
-	mutations: {
-		setLogInToken(state, signInToken) {
-			state.signInToken = signInToken;
-		},
-		successMessage(state, token) {
-			state.signInToken = token;
-		},
-		customer(state, payload) {
-			state.addCustomers = payload;
-		},
-		customerCategory(state, payload) {
-			state.createCategories = payload;
+	getters: {
+		isLoggedIn: (state) => !!state.signInToken,
+		user: (state) => state.user,
+		getAllCategories: (state) => state.category,
+		ifAuthenticated(state) {
+			return state.signInToken !== null;
 		},
 	},
 	actions: {
-		login(context, credentials) {
+		login({ commit }, credential) {
 			return axios
-				.post(`${baseUrl}${loginUrl}`, {
-					email: credentials.email,
-					password: credentials.password,
+				.post(`${baseURL}${loginUrl}`, {
+					email: credential.email,
+					password: credential.password,
 				})
 				.then((res) => {
-					console.log(res);
-					context.commit("setLoginToken", res.data.token);
-					return true;
+					localStorage.setItem("signInToken", JSON.stringify(res.data.token)),
+						localStorage.setItem(
+							"userId",
+							JSON.stringify(res.data.entities[0].id),
+						);
+					console.log(res.data);
+					commit("loginToken", {
+						signInToken: res.data.token,
+						userId: res.data.entities[0].id,
+					});
+					router.push("/Dashboard");
 				})
 				.catch((error) => {
 					console.log(error);
+					router.push("/Register");
 				});
 		},
-		register(context, credentials) {
-			return axios
-				.post(`${baseUrl}${RegisterUrl}`, {
-					name: credentials.name,
-					type: credentials.type,
-					market: credentials.market,
-					address: credentials.address,
-					admin_phone: credentials.admin_phone,
-					admin_email: credentials.admin_email,
-					admin_password: credentials.admin_password,
-					admin_last_name: credentials.admin_last_name,
-					admin_first_name: credentials.admin_first_name,
-					admin_other_names: credentials.admin_other_names,
-				})
-				.then((res) => {
-					context.commit("successMessage", res.data.token);
-					return true;
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		},
-		newCustomer(context, credentials) {
-			return axios
-				.post(`${baseUrl}${customer}`, {
-					name: credentials.name,
-					email: credentials.email,
-					phone_: credentials.phone,
-					address: credentials.address,
-					entity_id: credentials.entity_id,
-					category_id: credentials.category_id,
-				})
-				.then((res) => {
-					context.commit("customer", res.data.token);
-					return true;
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		},
-		category(context, credentials) {
-			return axios
-				.post(`${baseUrl}${customerCategory}`, {
-					category_name: credentials.category_name,
-					entity_id: credentials.entity_id,
-				})
-				.then((res) => {
-					context.commit("customerCategory", res.data.token);
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		},
-	},
-	getters: {
-		getSignUpToken(state) {
-			state.successMessage
 
+		register({ commit }, credential) {
+			return axios
+				.post(`${baseURL}${registerUrl}`, {
+					name: credential.name,
+					type: credential.type,
+					market: credential.market,
+					address: credential.address,
+					admin_phone: credential.admin_phone,
+					admin_email: credential.admin_email,
+					admin_password: credential.admin_password,
+					admin_last_name: credential.admin_last_name,
+					admin_first_name: credential.admin_first_name,
+					admin_other_names: credential.admin_other_names,
+				})
+				.then((res) => {
+					console.log(res.data.token);
+					localStorage.setItem("signInToken", JSON.stringify(res.data.token)),
+						localStorage.setItem(
+							"userId",
+							JSON.stringify(res.data.entities[0].id),
+						);
+					commit("loginToken", {
+						signInToken: res.data.token,
+						userId: res.data.entities[0].id,
+					});
+					router.push("/Dashboard");
+				})
+				.catch((error) => {
+					console.error(error);
+				});
 		},
-		getLogin(state) {
-			return state.setLoginToken;
+		logout({ commit }) {
+			localStorage.removeItem("signInToken");
+			localStorage.removeItem("userId");
+			router.push("/");
+			commit("clearAuth");
 		},
+		autoLogin({ commit }) {
+			const signInToken = JSON.parse(localStorage.getItem("signInToken"));
+			const userId = JSON.parse(localStorage.getItem("userId"));
+			if (signInToken && userId) {
+				router.push("/Dashboard");
+			}
+			commit("loginToken", {
+				signInToken: signInToken,
+				userId: userId,
+			});
+		},
+		category({ commit }, credential) {
+			return axios
+				.post(
+					`${baseURL}${category}`,
+					{
+						category_name: credential.category_name,
+						entity_id: credential.entity_id,
+					},
+					{
+						headers: {
+							Authorization: `${token}`,
+						},
+					},
+				)
+				.then((res) => {
+					console.log(res.data.data.category_name);
+					console.log(res.data.data.id);
+					commit("newCategoryInfo", { name: res.data.data.category_name });
+					commit("newCategoryInfo", { id: res.data.data.id });
+				});
+		},
+		deleteCategory({ commit }, id) {
+			return axios
+				.delete(`https://staging.afcfta.app/api/inventory/category/add/${id}`, {
+					headers: { Authorization: `${token}` },
+				})
+				.then((res) => {
+					console.log(res.data);
+					commit("removeCategoryInfo", res.data.data.id);
+				});
+		},
+		// async deleteCustomerInfo({ commit }) {
+		// 	const response = await axios.delete(`${baseURL}${customer}`);
+		// 	commit("deleteInfo", response.data.token);
+		// },
+	},
+	mutations: {
+		loginToken(state, userData) {
+			state.signInToken = userData.signInToken;
+			state.userId = userData.userId;
+		},
+		clearAuth(state) {
+			state.signInToken = null;
+			state.userId = null;
+		},
+		removeCategoryInfo(state, id) {
+			state.category = state.category.filter((item) => item.id !== id);
+		},
+		newCategoryInfo: (state, info) => state.category.push(info),
+		// setCategory: (state, info) => state.category = info
 	},
 });
 

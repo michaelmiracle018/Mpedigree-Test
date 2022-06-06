@@ -65,16 +65,14 @@
 			/>
 		</div>
 
-		<button type="submit" @click.prevent="submit()">Login</button>
+		<button type="submit" @click.prevent="submit(credential)">Login</button>
 	</form>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
 export default {
 	data() {
 		return {
-			errors: [],
 			adminFirstName: "",
 			adminLastName: "",
 			adminEmail: "",
@@ -85,16 +83,11 @@ export default {
 			adminPassword: "",
 			address: "",
 			adminPhone: "",
-			valid: true,
 		};
 	},
-
 	methods: {
-		...mapActions(["register"]),
-		...mapGetters(["getSignUpToken"]),
-
 		submit() {
-			this.register({
+			const credential = {
 				name: this.name,
 				type: this.type,
 				market: this.market,
@@ -105,14 +98,24 @@ export default {
 				admin_other_names: this.otherNames,
 				admin_last_name: this.adminLastName,
 				admin_first_name: this.adminFirstName,
-			});
-			// console.log(this.getSignUpToken);
-			if (this.getSignUpToken) 
-				this.$router.push({ path: "/DashBoard" });
-			
+			};
+			this.$store.dispatch("register", credential);
+			this.adminFirstName = "";
+			this.adminLastName = "";
+			this.adminEmail = "";
+			this.type = "";
+			this.otherNames = "";
+			this.name = "";
+			this.adminPassword = "";
+			this.address = "";
+			this.adminPhone = "";
 		},
 	},
 };
 </script>
 
-<style></style>
+<style>
+.token {
+	color: #fff;
+}
+</style>
