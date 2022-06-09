@@ -104,17 +104,14 @@
 			</div>
 		</main>
 	</section>
-	<!-- <EditCategory  /> -->
+	
 	<router-view />
 </template>
 
 <script>
-// import EditCategory from "./EditCategory.vue";
 import { mapGetters, mapActions } from "vuex";
 export default {
-	// components: {
-	// 	EditCategory
-	// },
+	
 	computed: {
 		...mapGetters(["getAllCategories", "getAllCustomers"]),
 		auth() {

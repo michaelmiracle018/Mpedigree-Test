@@ -57,7 +57,7 @@ const router = new createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	document.title = `${to.meta.title} | FireBlog`;
+	document.title = `${to.meta.title} | Text`;
 	next();
 });
 export default router;

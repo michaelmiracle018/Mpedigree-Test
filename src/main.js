@@ -254,7 +254,7 @@ const store = createStore({
 		editCategory(state, id, edit) {
 			state.category = state.category.find((item) => {
 				if (item.id === id) {
-					item = edit;
+					item.cate = edit;
 				}
 			});
 		},
