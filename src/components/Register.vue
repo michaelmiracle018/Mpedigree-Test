@@ -66,6 +66,7 @@
 		</div>
 
 		<button type="submit" @click.prevent="submit(credential)">Login</button>
+		<div class="error" v-show="error">{{ this.errMsg }}</div>
 	</form>
 </template>
 
@@ -83,32 +84,42 @@ export default {
 			adminPassword: "",
 			address: "",
 			adminPhone: "",
+			errMsg: "",
+			error: false,
 		};
 	},
 	methods: {
 		submit() {
-			const credential = {
-				name: this.name,
-				type: this.type,
-				market: this.market,
-				address: this.address,
-				admin_email: this.adminEmail,
-				admin_phone: this.adminPhone,
-				admin_password: this.adminPassword,
-				admin_other_names: this.otherNames,
-				admin_last_name: this.adminLastName,
-				admin_first_name: this.adminFirstName,
-			};
-			this.$store.dispatch("register", credential);
-			this.adminFirstName = "";
-			this.adminLastName = "";
-			this.adminEmail = "";
-			this.type = "";
-			this.otherNames = "";
-			this.name = "";
-			this.adminPassword = "";
-			this.address = "";
-			this.adminPhone = "";
+			if (
+				this.name !== "" &&
+				this.adminPhone !== "" &&
+				this.type !== "" &&
+				this.address !== "" &&
+				this.adminPassword !== "" &&
+				this.otherNames !== "" &&
+				this.adminEmail !== "" &&
+				this.adminLastName !== "" &&
+				this.adminFirstName !== ""
+			) {
+				this.error = false;
+				this.errMsg = "";
+				const credential = {
+					name: this.name,
+					type: this.type,
+					market: this.market,
+					address: this.address,
+					admin_email: this.adminEmail,
+					admin_phone: this.adminPhone,
+					admin_password: this.adminPassword,
+					admin_other_names: this.otherNames,
+					admin_last_name: this.adminLastName,
+					admin_first_name: this.adminFirstName,
+				};
+				this.$store.dispatch("register", credential);
+				return;
+			}
+			this.error = true;
+			this.errMsg = "Please Enter All Fields";
 		},
 	},
 };
@@ -117,5 +128,12 @@ export default {
 <style>
 .token {
 	color: #fff;
+}
+
+.error {
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+	color: red;
 }
 </style>

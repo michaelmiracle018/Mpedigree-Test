@@ -23,14 +23,8 @@
 				<input type="text" id="username" v-model="address" required />
 			</div>
 		</div>
-		<button type="submit" @click.prevent="submit(credential)">Submit</button>
+		<button type="submit" @click.prevent="submit">Submit</button>
 	</form>
-	<div class="info-container" v-for="(info, index) in collectInfo" :key="index">
-		<h2>
-			{{ info }}
-			<i class="fa-solid fa-times" @click="removeInfo(index)"></i>
-		</h2>
-	</div>
 </template>
 
 <script>
@@ -43,7 +37,7 @@ export default {
 			email: "",
 			phone: "",
 			address: "",
-			entityId: 1,
+			entityId:  localStorage.getItem("userId"),
 		};
 	},
 	methods: {
@@ -51,21 +45,14 @@ export default {
 		submit() {
 			const credential = {
 				email: this.email,
-				phone: this.phone,
+				phone_number: this.phone,
 				address: this.address,
 				name: this.name,
-				entityId: 1,
+				entity_id: this.entityId,
 			};
-			this.customer(credential);
-			// if (
-			// 	this.name !== "",
-			// 	this.email !== "",
-			// 	this.phone !== "",
-			// 	this.market !== "",
-			// 	this.address !== ""
-			// ) {
-			// }
+			this.$store.dispatch("customer", credential);
 		},
+		
 	},
 };
 </script>

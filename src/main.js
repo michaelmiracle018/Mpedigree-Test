@@ -9,24 +9,27 @@ import axios from "axios";
 import "./assets/DashBoard.css";
 import "./assets/Style.css";
 
-// const deleteCategory =  "https://staging.afcfta.app/api/inventory/category/list/1/";
+const getCategory = "/inventory/category/list/";
 const registerUrl = "/entity/signup";
 const baseURL = "https://staging.afcfta.app/api";
 const loginUrl = "/individual/signin";
 const category = "/inventory/category/add/";
-// const customer = "/inventory/customers/add/";
+const customer = "/inventory/customers/add/";
 
 const token = JSON.parse(localStorage.getItem("signInToken"));
-// const id = JSON.parse(localStorage.getItem("userId"));
+const userId = localStorage.getItem("userId");
 
 const store = createStore({
 	state: {
+		customers: [],
 		category: [],
+		newCategory: "",
 		signInToken: null,
 		userId: null,
 		user: null,
 	},
 	getters: {
+		getAllCustomers: (state) => state.customers,
 		isLoggedIn: (state) => !!state.signInToken,
 		user: (state) => state.user,
 		getAllCategories: (state) => state.category,
@@ -35,6 +38,7 @@ const store = createStore({
 		},
 	},
 	actions: {
+		// LOGIN ACTION
 		login({ commit }, credential) {
 			return axios
 				.post(`${baseURL}${loginUrl}`, {
@@ -45,12 +49,12 @@ const store = createStore({
 					localStorage.setItem("signInToken", JSON.stringify(res.data.token)),
 						localStorage.setItem(
 							"userId",
-							JSON.stringify(res.data.entities[0].id),
+							JSON.stringify(res.data.entities[0].entity.id),
 						);
 					console.log(res.data);
 					commit("loginToken", {
 						signInToken: res.data.token,
-						userId: res.data.entities[0].id,
+						userId: res.data.entities[0].entity.id,
 					});
 					router.push("/Dashboard");
 				})
@@ -59,7 +63,7 @@ const store = createStore({
 					router.push("/Register");
 				});
 		},
-
+		//  REGISTER ACTION
 		register({ commit }, credential) {
 			return axios
 				.post(`${baseURL}${registerUrl}`, {
@@ -91,12 +95,14 @@ const store = createStore({
 					console.error(error);
 				});
 		},
+		// LOGOUT ACTION
 		logout({ commit }) {
 			localStorage.removeItem("signInToken");
 			localStorage.removeItem("userId");
 			router.push("/");
 			commit("clearAuth");
 		},
+		// AUTO LOGIN ACTION
 		autoLogin({ commit }) {
 			const signInToken = JSON.parse(localStorage.getItem("signInToken"));
 			const userId = JSON.parse(localStorage.getItem("userId"));
@@ -108,6 +114,7 @@ const store = createStore({
 				userId: userId,
 			});
 		},
+		// CATEGORIES ACTION
 		category({ commit }, credential) {
 			return axios
 				.post(
@@ -125,24 +132,109 @@ const store = createStore({
 				.then((res) => {
 					console.log(res.data.data.category_name);
 					console.log(res.data.data.id);
-					commit("newCategoryInfo", { name: res.data.data.category_name });
-					commit("newCategoryInfo", { id: res.data.data.id });
+					commit("newCategoryInfo", res.data);
+					router.push("/Dashboard");
+				})
+				.catch((error) => {
+					console.log(error);
 				});
 		},
-		deleteCategory({ commit }, id) {
+		fetchAllCategories({ commit }) {
 			return axios
-				.delete(`https://staging.afcfta.app/api/inventory/category/add/${id}`, {
+				.get(`${baseURL}${getCategory}${userId}`, {
 					headers: { Authorization: `${token}` },
 				})
 				.then((res) => {
 					console.log(res.data);
-					commit("removeCategoryInfo", res.data.data.id);
+					commit("setCategories", res.data.categories);
+				})
+				.catch((error) => {
+					console.log(error);
 				});
 		},
-		// async deleteCustomerInfo({ commit }) {
-		// 	const response = await axios.delete(`${baseURL}${customer}`);
-		// 	commit("deleteInfo", response.data.token);
-		// },
+
+		deleteCategory({ commit }, categoryId) {
+			return axios
+				.delete(
+					`https://staging.afcfta.app/api/inventory/category/${categoryId}/delete/`,
+					{
+						headers: { Authorization: `${token}` },
+					},
+				)
+				.then((res) => {
+					console.log(res.data.categories);
+					commit("removeCategoryInfo", categoryId);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
+		updateCategoryInfo({ commit }, categoryId) {
+			return axios
+				.put(
+					`https://staging.afcfta.app/api/inventory/category/${categoryId}/update/`,
+					{
+						headers: { Authorization: `${token}` },
+					},
+				)
+				.then((res) => {
+					console.log(res.data.categories);
+					commit("editCategory", categoryId, res.data);
+				});
+		},
+		// CUSTOMERS ACTION
+		customer({ commit }, credential) {
+			return axios
+				.post(
+					`${baseURL}${customer}`,
+					{
+						email: credential.email,
+						name: credential.name,
+						phone_number: credential.phone_number,
+						address: credential.address,
+						entity_id: credential.entity_id,
+					},
+					{
+						headers: {
+							Authorization: `${token}`,
+						},
+					},
+				)
+				.then((res) => {
+					console.log(res.data);
+					commit("newCustomerInfo", res.data);
+					router.push("/Dashboard");
+				});
+		},
+		fetchAllCustomers({ commit }) {
+			return axios
+				.get(
+					`https://staging.afcfta.app/api/inventory/customers/list/${userId}`,
+					{
+						headers: { Authorization: `${token}` },
+					},
+				)
+				.then((res) => {
+					console.log(res.data);
+					commit("setCustomers", res.data.customer);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
+		deleteCustomer({ commit }, uuId) {
+			return axios
+				.delete(`https://staging.afcfta.app/api/inventory/customers/${uuId}/`, {
+					headers: { Authorization: `${token}` },
+				})
+				.then((res) => {
+					console.log(res.data.categories);
+					commit("removeCustomerInfo", uuId);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
 	},
 	mutations: {
 		loginToken(state, userData) {
@@ -153,11 +245,24 @@ const store = createStore({
 			state.signInToken = null;
 			state.userId = null;
 		},
+		newCategoryInfo: (state, info) => state.category.push(info),
+		setCategories: (state, category) => (state.category = category),
 		removeCategoryInfo(state, id) {
 			state.category = state.category.filter((item) => item.id !== id);
 		},
-		newCategoryInfo: (state, info) => state.category.push(info),
-		// setCategory: (state, info) => state.category = info
+		editCategory(state, id, edit) {
+			const record = (state.category = state.category.find(
+				(item) => (item.id = id),
+			));
+			state.category[record] = edit;
+		},
+		newCustomerInfo: (state, customersInfo) => {
+			state.customers.push(customersInfo)
+		},
+		setCustomers: (state, customer) => (state.customers = customer),
+		removeCustomerInfo(state, id) {
+			state.customers = state.customers.filter((item) => item.id !== id);
+		},
 	},
 });
 

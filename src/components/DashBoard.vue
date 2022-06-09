@@ -15,7 +15,9 @@
 					</div>
 					<div class="container-btn">
 						<div class="log-out-container">
-							<router-link to="/logout" class="btn-link" @click="handleLogout">logout</router-link >
+							<router-link to="/" class="btn-link" @click="handleLogout"
+								>logout</router-link
+							>
 						</div>
 					</div>
 				</div>
@@ -27,11 +29,18 @@
 					<div class="category-container">
 						<div class="category-wrapper">
 							<h1>Category</h1>
-							<div id="category">
+							<div
+								id="category"
+								v-for="item in getAllCategories"
+								:key="item.id"
+								@dblclick="editCategory(item.id)"
+							>
 								<ul>
 									<li>
-										<span class="name">miracle</span>
-										<span class="delete">Delete</span>
+										<span class="name">{{ item.category_name }}</span>
+										<span class="delete" @click="deleteCategoryInfo(item.id)"
+											>Delete</span
+										>
 									</li>
 								</ul>
 							</div>
@@ -46,29 +55,16 @@
 									<th>Email</th>
 									<th>Phone</th>
 									<th>Address</th>
-									<th>Market</th>
 									<th>Action</th>
 								</tr>
-								<tr>
-									<td>Miracle Michael</td>
-									<td>miraclemichael018@gmail.com</td>
-									<td>0628929929</td>
-									<td>alloway</td>
-									<td>great</td>
+								<tr v-for="customer in getAllCustomers" :key="customer.id">
+									<td>{{ customer.name }}</td>
+									<td>{{ customer.email }}</td>
+									<td>{{ customer.phone_number }}</td>
+									<td>{{ customer.address }}</td>
 									<td>
 										<i class="fa-solid fa-pen-to-square btns"></i>
-										<i class="fa-solid fa-trash btns"></i>
-									</td>
-								</tr>
-								<tr>
-									<td>Miracle Michael</td>
-									<td>miraclemichael018@gmail.com</td>
-									<td>0628929929</td>
-									<td>alloway</td>
-									<td>great</td>
-									<td>
-										<i class="fa-solid fa-pen-to-square btns"></i>
-										<i class="fa-solid fa-trash btns"></i>
+										<i @click="deleteCustomerInfo(customer.uuid)" class="fa-solid fa-trash btns"></i>
 									</td>
 								</tr>
 							</table>
@@ -81,19 +77,20 @@
 			<div class="overlay" v-if="showSidebar">
 				<div class="btn-overlay">
 					<span class="close-btn">
-						<i class="fa-solid fa-window-close close" @click="toggleSidebar"></i>
+						<i
+							class="fa-solid fa-window-close close"
+							@click="toggleSidebar"
+						></i>
 					</span>
 					<div class="sidebar">
 						<ul>
 							<li>
-								<router-link class="link" to="/Category"
-									>Category</router-link
-								>
+							
+								<router-link class="link" to="/Category"> <i class="fa-solid fa-list-check icon"></i> Category</router-link>
 							</li>
 							<li>
-								<router-link class="link" to="/Customer"
-									>Customer</router-link
-								>
+							
+								<router-link class="link" to="/Customer"> <i class="fa-solid fa-users icon"></i> Customer</router-link>
 							</li>
 						</ul>
 					</div>
@@ -102,34 +99,54 @@
 		</main>
 	</section>
 	<router-view />
-
 </template>
 
 <script>
-// import Category from "./Category.vue";
+// import EditCategory from "./EditCategory.vue";
 import { mapGetters, mapActions } from "vuex";
-// import "../assets/DashBoard.css";
 export default {
+	// components: {
+	// 	EditCategory
+	// },
 	computed: {
-		...mapGetters(["getAllCategories"]),
+		...mapGetters(["getAllCategories", "getAllCustomers"]),
 		auth() {
 			return this.$store.getters.ifAuthenticated;
 		},
 	},
 	methods: {
-		...mapActions(["deleteCategory"]),
+		...mapActions([
+			"deleteCategory",
+			"fetchAllCategories",
+			"updateCategoryInfo",
+			"fetchAllCustomers",
+			"deleteCustomer",
+		]),
 		handleLogout() {
-			this.$store.dispatch('logout')
+			this.$store.dispatch("logout");
 		},
 		toggleSidebar() {
-			this.showSidebar = !this.showSidebar
+			this.showSidebar = !this.showSidebar;
+		},
+		deleteCategoryInfo(categoryId) {
+			this.deleteCategory(categoryId);
+		},
+		editCategory(categoryId) {
+			this.updateCategoryInfo(categoryId);
+		},
+		deleteCustomerInfo(uuId) {
+			this.deleteCustomer(uuId);
 		}
 	},
 	data() {
 		return {
-			showSidebar: false
-		}
-	}
+			showSidebar: false,
+			updateCategory: {}
+		};
+	},
+	created() {
+		this.fetchAllCategories(), this.fetchAllCustomers();
+	},
 };
 </script>
 
@@ -138,10 +155,6 @@ export default {
 	padding: 0.3rem;
 	font-size: 12px;
 	font-weight: bold;
-}
-
-i { 
-	cursor: pointer;
 }
 
 .btn-link {
@@ -165,9 +178,17 @@ i {
 	font-weight: bold;
 	font-size: 1.4rem;
 	text-align: center;
+	transition: all 0.5s ease-out;
+}
+
+ .icon {
+	position: relative; 
+	left: -40px;
+	bottom: -35px;
 }
 
 .link:hover {
-	color: aqua;
+	color: rgb(87, 199, 199);
+
 }
 </style>

@@ -2,7 +2,8 @@
 	<div v-if="!auth" class="nav-container">
 		<div class="btn-container">
 			<div class="sign-up-container">
-				<router-link class="btn-link" to="/Register">Sign Up</router-link>
+				<router-link class="btn-link" to="/" >Login/Register</router-link>
+
 			</div>
 			<div class="log-out-container">
 				<router-link to="/logout" v-if="auth" class="btn-link" @click="handleLogout">logout</router-link>
@@ -31,7 +32,10 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
+
 .nav-container {
 	width: 100vw;
 	height: 10%;

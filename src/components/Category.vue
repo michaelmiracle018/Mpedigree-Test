@@ -16,7 +16,7 @@ export default {
 	data() {
 		return {
 			name: "",
-			entityId: 1,
+			entityId: localStorage.getItem("userId")
 		};
 	},
 	methods: {
@@ -26,7 +26,7 @@ export default {
 				category_name: this.name,
 				entity_id: this.entityId,
 			};
-			this.$store.dispatch("category", credential);
+			this.$store.dispatch("category", credential)
 		},
 	},
 };
