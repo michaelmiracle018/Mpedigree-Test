@@ -23,7 +23,7 @@
 				<input type="text" id="username" v-model="address" required />
 			</div>
 		</div>
-		<button type="submit" @click.prevent="submit">Submit</button>
+		<button type="submit" @click.prevent="submit()">Submit</button>
 	</form>
 </template>
 
@@ -51,11 +51,14 @@ export default {
 				entity_id: this.entityId,
 			};
 			this.$store.dispatch("customer", credential);
+			this.name = '',
+				this.email = '',
+			this.phone = '',
+			this.address = ''
 		},
-		
+
 	},
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

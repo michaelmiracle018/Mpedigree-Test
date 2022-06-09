@@ -12,33 +12,52 @@ const routes = [
 		path: "/",
 		name: "/Login",
 		component: Login,
+		meta: {
+			title: "Login",
+		},
 	},
 
 	{
 		path: "/Register",
 		name: "Register",
 		component: Register,
+		meta: {
+			title: "Register",
+		},
 	},
 
 	{
-
 		path: "/DashBoard",
 		name: "DashBoard",
 		component: DashBoard,
+		meta: {
+			title: "DashBoard",
+		},
 	},
 	{
 		path: "/Customer",
 		name: "Customer",
 		component: Customer,
+		meta: {
+			title: "Customer",
+		},
 	},
 	{
 		path: "/Category",
 		name: "Category",
 		component: Category,
+		meta: {
+			title: "Category",
+		},
 	},
 ];
 const router = new createRouter({
 	history: createWebHistory(),
 	routes,
+});
+
+router.beforeEach((to, from, next) => {
+	document.title = `${to.meta.title} | FireBlog`;
+	next();
 });
 export default router;

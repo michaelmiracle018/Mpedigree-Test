@@ -172,14 +172,15 @@ const store = createStore({
 		updateCategoryInfo({ commit }, categoryId) {
 			return axios
 				.put(
-					`https://staging.afcfta.app/api/inventory/category/${categoryId}/update/`,
+					`https://staging.afcfta.app/api/inventory/category/${categoryId}/update/`, 
 					{
 						headers: { Authorization: `${token}` },
 					},
 				)
 				.then((res) => {
+					// let newCategory = res.data.categories;
 					console.log(res.data.categories);
-					commit("editCategory", categoryId, res.data);
+					commit("editCategory", categoryId);
 				});
 		},
 		// CUSTOMERS ACTION
@@ -201,7 +202,7 @@ const store = createStore({
 					},
 				)
 				.then((res) => {
-					console.log(res.data);
+					console.log(res.data.customer);
 					commit("newCustomerInfo", res.data);
 					router.push("/Dashboard");
 				});
@@ -251,14 +252,13 @@ const store = createStore({
 			state.category = state.category.filter((item) => item.id !== id);
 		},
 		editCategory(state, id, edit) {
-			const record = (state.category = state.category.find(
-				(item) => (item.id = id),
-			));
-			state.category[record] = edit;
+			state.category = state.category.find((item) => {
+				if (item.id === id) {
+					item = edit;
+				}
+			});
 		},
-		newCustomerInfo: (state, customersInfo) => {
-			state.customers.push(customersInfo)
-		},
+		newCustomerInfo: (state, info) => state.customers.push(info),
 		setCustomers: (state, customer) => (state.customers = customer),
 		removeCustomerInfo(state, id) {
 			state.customers = state.customers.filter((item) => item.id !== id);

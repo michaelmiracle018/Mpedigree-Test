@@ -33,7 +33,7 @@
 								id="category"
 								v-for="item in getAllCategories"
 								:key="item.id"
-								@dblclick="editCategory(item.id)"
+								@dblclick="editCategory(item.id)" 
 							>
 								<ul>
 									<li>
@@ -57,14 +57,17 @@
 									<th>Address</th>
 									<th>Action</th>
 								</tr>
-								<tr v-for="customer in getAllCustomers" :key="customer.id">
+								<tr v-for="customer in getAllCustomers" :key="customer.uuid">
 									<td>{{ customer.name }}</td>
 									<td>{{ customer.email }}</td>
 									<td>{{ customer.phone_number }}</td>
 									<td>{{ customer.address }}</td>
 									<td>
 										<i class="fa-solid fa-pen-to-square btns"></i>
-										<i @click="deleteCustomerInfo(customer.uuid)" class="fa-solid fa-trash btns"></i>
+										<i
+											@click="deleteCustomerInfo(customer.uuid)"
+											class="fa-solid fa-trash btns"
+										></i>
 									</td>
 								</tr>
 							</table>
@@ -85,12 +88,15 @@
 					<div class="sidebar">
 						<ul>
 							<li>
-							
-								<router-link class="link" to="/Category"> <i class="fa-solid fa-list-check icon"></i> Category</router-link>
+								<router-link class="link" to="/Category">
+									<i class="fa-solid fa-list-check icon"></i>
+									Category</router-link
+								>
 							</li>
 							<li>
-							
-								<router-link class="link" to="/Customer"> <i class="fa-solid fa-users icon"></i> Customer</router-link>
+								<router-link class="link" to="/Customer">
+									<i class="fa-solid fa-users icon"></i> Customer</router-link
+								>
 							</li>
 						</ul>
 					</div>
@@ -98,6 +104,7 @@
 			</div>
 		</main>
 	</section>
+	<!-- <EditCategory  /> -->
 	<router-view />
 </template>
 
@@ -132,20 +139,22 @@ export default {
 			this.deleteCategory(categoryId);
 		},
 		editCategory(categoryId) {
+			
 			this.updateCategoryInfo(categoryId);
 		},
 		deleteCustomerInfo(uuId) {
 			this.deleteCustomer(uuId);
-		}
+		},
 	},
 	data() {
 		return {
 			showSidebar: false,
-			updateCategory: {}
+			updateCategory: {},
 		};
 	},
 	created() {
-		this.fetchAllCategories(), this.fetchAllCustomers();
+		this.fetchAllCategories(),
+		this.fetchAllCustomers()
 	},
 };
 </script>
@@ -181,14 +190,13 @@ export default {
 	transition: all 0.5s ease-out;
 }
 
- .icon {
-	position: relative; 
+.icon {
+	position: relative;
 	left: -40px;
 	bottom: -35px;
 }
 
 .link:hover {
 	color: rgb(87, 199, 199);
-
 }
 </style>
