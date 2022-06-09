@@ -145,7 +145,7 @@ export default {
 		};
 	},
 	created() {
-		this.fetchAllCategories(), this.fetchAllCustomers();
+		this.fetchAllCategories()
 	},
 };
 </script>
